@@ -1,0 +1,31 @@
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class WebScraper {
+    public static void main(String[] args) {
+        String url = "https://books.toscrape.com/"; // Example site
+        try {
+            Document doc = Jsoup.connect(url).get();
+            Elements books = doc.select(".product_pod");
+
+            FileWriter csv = new FileWriter("products.csv");
+            csv.append("Title,Price\n");
+
+            for (Element book : books) {
+                String title = book.select("h3 a").attr("title");
+                String price = book.select(".price_color").text();
+
+                csv.append(title).append(",").append(price).append("\n");
+            }
+            csv.close();
+            System.out.println("Scraping completed. Data saved to products.csv");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
